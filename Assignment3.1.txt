@@ -1,0 +1,102 @@
+Assignment 3.1
+Task1
+
+
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.fs.Path;
+
+public class ListDirectoryContents {
+  public static void main(String[] args) throws IOException, URISyntaxException
+  {
+    //1. Get the Configuration instance
+    Configuration configuration = new Configuration();
+    //2. Get the instance of the HDFS
+    FileSystem hdfs = FileSystem.get(new URI("hdfs://localhost:54310"), configuration);
+    //3. Get the metadata of the desired directory
+    FileStatus[] fileStatus = hdfs.listStatus(new Path("hdfs://localhost:54310/user/hadoop"));
+    //4. Using FileUtil, getting the Paths for all the FileStatus
+    Path[] paths = FileUtil.stat2Paths(fileStatus);
+    //5. Iterate through the directory and display the files in it
+    System.out.println("***** Contents of the Directory *****");
+    for(Path path : paths)
+    {
+      System.out.println(path);
+    }
+  }
+}
+
+Task 2:
+
+import java.io.File;
+
+public class Filewalker {
+
+    public void walk( String path ) {
+
+        File root = new File( path );
+        File[] list = root.listFiles();
+
+        if (list == null) return;
+
+        for ( File f : list ) {
+            if ( f.isDirectory() ) {
+                walk( f.getAbsolutePath() );
+                System.out.println( "Dir:" + f.getAbsoluteFile() );
+            }
+            else {
+                System.out.println( "File:" + f.getAbsoluteFile() );
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Filewalker fw = new Filewalker();
+        fw.walk("c:\\" );
+    }
+
+}
+
+
+Task 3:
+
+import java.io.File;
+
+public class DirectoryReader {
+
+  static int spc_count=-1;
+
+  static void Process(File aFile) {
+    spc_count++;
+    String spcs = "";
+    for (int i = 0; i < spc_count; i++)
+      spcs += " ";
+    if(aFile.isFile())
+      System.out.println(spcs + "[FILE] " + aFile.getName());
+    else if (aFile.isDirectory()) {
+      System.out.println(spcs + "[DIR] " + aFile.getName());
+      File[] listOfFiles = aFile.listFiles();
+      if(listOfFiles!=null) {
+        for (int i = 0; i < listOfFiles.length; i++)
+          Process(listOfFiles[i]);
+      } else {
+        System.out.println(spcs + " [ACCESS DENIED]");
+      }
+    }
+    spc_count--;
+  }
+
+  public static void main(String[] args) {
+    String nam = "D:/";
+    File aFile = new File(nam);
+    Process(aFile);
+  }
+
+}
